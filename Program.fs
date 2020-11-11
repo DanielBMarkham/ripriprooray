@@ -5,10 +5,11 @@
     open Logary.Targets
     open System.Threading
     open Util
+    open Types
     // Tag-list for the logger is namespace, project name, file name
-    let moduleLogger = logary.getLogger (PointName [| "EA"; "Compiler"; "EA"; "Main" |])
+    let moduleLogger = logary.getLogger (PointName [| "ripriprooray"; "Ripper"; "riprip"; "Main" |])
     // For folks on anal mode, log the module being entered.  NounVerb Proper Case
-    logEvent Verbose "Module enter...." moduleLogger
+    logEvent LogLevel.Verbose "Module enter...." moduleLogger
 
     let bufferToHandleFilesBeingPipedInFromTheCommandLine = new System.Text.StringBuilder()
     let floodWorker((stream:System.IO.Stream), (buffer:byte [] ref), (ct:System.Threading.CancellationToken), (readSize:int ref)) =
@@ -28,7 +29,7 @@
         if readSizeAsync>(0) // -1 is nothing happened. 0 is end-of-stream
             then
                 // We've got a live one here, Joe!
-                (logEvent Verbose ("INCOMING STREAM. WORKER GOT IT. SIZE = " + readSizeAsync.ToString()) moduleLogger) |> ignore
+                (logEvent LogLevel.Verbose ("INCOMING STREAM. WORKER GOT IT. SIZE = " + readSizeAsync.ToString()) moduleLogger) |> ignore
                 bufferToHandleFilesBeingPipedInFromTheCommandLine.Append(Console.InputEncoding.GetString(!buffer, 0, readSizeAsync)) |> ignore 
                 readSize:=readSizeAsync
                 // Try reading again to the end of the stream. Couldn't hurt, right?
@@ -42,7 +43,7 @@
                       |_ ->()
                   readRest()
                 with |ex->
-                  (logEvent Verbose ("INCOMING STREAM. WORKER SECOND READ FAIL " + ex.Message) moduleLogger) |> ignore
+                  (logEvent LogLevel.Verbose ("INCOMING STREAM. WORKER SECOND READ FAIL " + ex.Message) moduleLogger) |> ignore
             else ()
       }
     let floodManager((stream:System.IO.Stream), (ct:System.Threading.CancellationToken), (buffer:byte [] ref),  (readSize:int ref)) =
@@ -54,7 +55,7 @@
           // Should never do any of the following code, since our "normal" flow is timing out
           if (!buffer).Length>0
             then
-              (logEvent Debug ("WHY AM I HERE? GOT IT MANAGER. SIZE = " + (!buffer).Length.ToString()) moduleLogger) |> ignore
+              (logEvent LogLevel.Debug ("WHY AM I HERE? GOT IT MANAGER. SIZE = " + (!buffer).Length.ToString()) moduleLogger) |> ignore
             else ()
           ()
       }
@@ -74,12 +75,12 @@
         // This is where we naturally end. But there's nothing for us to use yet
         // The thread pool must be allowed to spin down first
         | :? TimeoutException as te->
-          (logEvent Verbose ("Method floodConsoleToFindIncomingStreams ending normally by timing out " ) moduleLogger) |> ignore
+          (logEvent LogLevel.Verbose ("Method floodConsoleToFindIncomingStreams ending normally by timing out " ) moduleLogger) |> ignore
         // We'll also get errors that the stream can't read because blocking. Not here, but as threads come back and there's nowhere to come back to
         // this is for example purposes only. I think the system catches these, since we're long gone
         | :? NotSupportedException as nse->()
         |ex->
-          (logEvent Debug ("FILE STREAM COMING IN BUT SOME ERROR = " + ex.Message) moduleLogger)
+          (logEvent LogLevel.Debug ("FILE STREAM COMING IN BUT SOME ERROR = " + ex.Message) moduleLogger)
         // Some oddball break while we were working. Need to decide whether to continue or not
         //| :? ThreadInterruptedException as tie->
         //    (logEvent Debug "FILE STREAM COMING IN BUT THREADS DIED" moduleLogger)
@@ -106,7 +107,7 @@
       // stream.ReadTimeout<-250
       
       
-      logEvent Verbose "Method main beginning....." moduleLogger
+      logEvent LogLevel.Verbose "Method main beginning....." moduleLogger
       use mre = new System.Threading.ManualResetEventSlim(false)
       use sub = Console.CancelKeyPress.Subscribe (fun _ -> mre.Set())
 

@@ -8,43 +8,14 @@ open Logary.Targets
 open System.Threading
 open Types
 
-// Logging all the things!
-// Logging code must come before anything else in order to use logging
-// let incomingStuff:string=pipedStreamIncoming()
-// Need to know this when logging
-let oldStdout=System.Console.Out
-let oldStdErr=System.Console.Error
-let mutable CommandLineArgumentsHaveBeenProcessed=false
-type LogEventParms=LogLevel*string*Logary.Logger
-let loggingBacklog = new System.Collections.Generic.Queue<LogEventParms>(4096)
-let logary =
-    Logary.Configuration.Config.create "EA.Logs" "localhost"
-    |> Logary.Configuration.Config.targets [ Logary.Targets.LiterateConsole.create Logary.Targets.LiterateConsole.empty "console" ]
-    |> Logary.Configuration.Config.loggerMinLevel "" Logary.LogLevel.Debug
-    |> Logary.Configuration.Config.processing (Logary.Configuration.Events.events |> Logary.Configuration.Events.sink ["console";])
-    |> Logary.Configuration.Config.build
-    |> Hopac.Hopac.run
 // Tag-list for the logger is namespace, project name, file name
-let moduleLogger = logary.getLogger (PointName [| "EA"; "Types"; "EATypeExtensions" |])
-
-/// ErrorLevel, Message to display, and logger to send it to
-let logEvent (lvl:LogLevel) msg lggr =
-    if CommandLineArgumentsHaveBeenProcessed
-        then Logary.Message.eventFormat (lvl, msg)|> Logger.logSimple lggr
-        else loggingBacklog.Enqueue(lvl, msg, lggr)
-let turnOnLogging() =
-    CommandLineArgumentsHaveBeenProcessed<-true
-    System.Console.SetOut oldStdErr
-    System.Console.SetError oldStdout
-    loggingBacklog|>Seq.iter(fun x-> 
-        let lvl, msg, lggr = x
-        logEvent lvl msg lggr)
-logEvent Verbose "Module enter...." moduleLogger
+let moduleLogger = logary.getLogger (PointName [| "ripriprooray"; "Util"; "Utils" |])
+logEvent LogLevel.Verbose "Module enter...." moduleLogger
 
 
 let newMain (argv:string[]) (compilerCancelationToken:System.Threading.CancellationTokenSource) (manualResetEvent:System.Threading.ManualResetEventSlim) (incomingStream:seq<string>) (ret:int byref) =
     try
-      logEvent Verbose "Method newMain beginning....." moduleLogger
+      logEvent LogLevel.Verbose "Method newMain beginning....." moduleLogger
       //logEvent Logary.Debug ("Method newMain incomingStuff lineCount = " + (incomingStream |> Seq.length).ToString()) moduleLogger
 
       // Error is the new Out. Write here so user can pipe places
@@ -53,7 +24,7 @@ let newMain (argv:string[]) (compilerCancelationToken:System.Threading.Cancellat
       let mutable ret=0//loadEAConfigFromCommandLine argv incomingStream |> inputStuff |> doStuff |> outputStuff
       // I'm done (since I'm a single-threaded function, I know this)
       // take a few seconds to catch up, then you may run until you quit
-      logEvent Verbose "..... Method newMain ending. Normal Path." moduleLogger
+      logEvent LogLevel.Verbose "..... Method newMain ending. Normal Path." moduleLogger
       compilerCancelationToken.Token.WaitHandle.WaitOne(3000) |> ignore
       manualResetEvent.Set()
       ()
@@ -67,9 +38,9 @@ let newMain (argv:string[]) (compilerCancelationToken:System.Threading.Cancellat
             manualResetEvent.Set()
             ()*)
         | ex ->
-            logEvent Error "..... Method newMain ending. Exception." moduleLogger
-            logEvent Error ("Program terminated abnormally " + ex.Message) moduleLogger
-            logEvent Error (ex.StackTrace) moduleLogger
+            logEvent LogLevel.Error "..... Method newMain ending. Exception." moduleLogger
+            logEvent LogLevel.Error ("Program terminated abnormally " + ex.Message) moduleLogger
+            logEvent LogLevel.Error (ex.StackTrace) moduleLogger
             if ex.InnerException = null
                 then
                     Logary.Message.eventFormat (Logary.Debug, "newMain Exit System Exception")|> Logger.logSimple moduleLogger
@@ -85,4 +56,4 @@ let newMain (argv:string[]) (compilerCancelationToken:System.Threading.Cancellat
                     manualResetEvent.Set()
                     ()
 // For folks on anal mode, log the module being exited.  NounVerb Proper Case
-logEvent Verbose "....Module exit" moduleLogger
+logEvent LogLevel.Verbose "....Module exit" moduleLogger
