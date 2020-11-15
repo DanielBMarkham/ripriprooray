@@ -14,6 +14,14 @@ let moduleLogger = logary.getLogger (PointName [| "ripriprooray"; "Util"; "Utils
 logEvent LogLevel.Verbose "Module enter...." moduleLogger
 
 
+//loadEAConfigFromCommandLine argv incomingStream |> inputStuff |> doStuff |> outputStuff
+
+let getRRRConfigFromCommandLine:GetRRRProgramConfigType =
+  (
+    fun (args)->defaultRRRConfig
+  )
+
+
 let newMain (argv:string[]) (compilerCancelationToken:System.Threading.CancellationTokenSource) (manualResetEvent:System.Threading.ManualResetEventSlim) (incomingStream:seq<string>) (ret:int byref) =
     try
       logEvent LogLevel.Verbose "Method newMain beginning....." moduleLogger
