@@ -7,6 +7,7 @@ open Logary.Configuration
 open Logary.Targets
 open System.Threading
 open Types
+open AppTypes
 
 // Tag-list for the logger is namespace, project name, file name
 let moduleLogger = logary.getLogger (PointName [| "ripriprooray"; "Util"; "Utils" |])

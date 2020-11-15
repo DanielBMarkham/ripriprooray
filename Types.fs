@@ -333,16 +333,3 @@ let createNewConfigEntry commandlineSymbol commandlineParameterName parameterHel
 
 
 
-
-type TransferItem =
-  {
-    ItemName:string
-    ItemLines:string []
-  }
-type InterAppDataTransfer =
-  {
-    CreationAppName:string
-    Version:string 
-    StreamName:string
-    TransferItems:TransferItem[]
-  }
