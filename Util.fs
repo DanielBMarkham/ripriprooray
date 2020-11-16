@@ -41,11 +41,11 @@ let newMain (argv:string[]) (compilerCancelationToken:System.Threading.Cancellat
         | :? System.NotSupportedException as nse->
             logEvent Logary.Debug ("..... Method newMain ending. NOT SUPPORTED EXCEPTION = " + nse.Message) moduleLogger
             ()
-(*        | :? UserNeedsHelp as hex ->
-            defaultEARBaseOptions.PrintThis
+        | :? UserNeedsHelp as hex ->
+            defaultRRRBaseOptions.PrintThis
             logEvent Logary.Debug "..... Method newMain ending. User requested help." moduleLogger
             manualResetEvent.Set()
-            ()*)
+            ()
         | ex ->
             logEvent LogLevel.Error "..... Method newMain ending. Exception." moduleLogger
             logEvent LogLevel.Error ("Program terminated abnormally " + ex.Message) moduleLogger
