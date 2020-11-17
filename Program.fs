@@ -4,8 +4,8 @@
     open Logary
     open Logary.Targets
     open System.Threading
-    open Util
     open Types
+    open App
     // Tag-list for the logger is namespace, project name, file name
     let moduleLogger = logary.getLogger (PointName [| "ripriprooray"; "Ripper"; "riprip"; "Main" |])
     // For folks on anal mode, log the module being entered.  NounVerb Proper Case

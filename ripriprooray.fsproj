@@ -9,6 +9,7 @@
     <Compile Include="Types.fs" />
     <Compile Include="AppRRRTypes.fs" />
     <Compile Include="Util.fs" />
+    <Compile Include="App.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

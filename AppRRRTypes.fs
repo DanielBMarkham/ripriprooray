@@ -14,8 +14,14 @@ type InterAppDataTransfer =
     StreamName:string
     TransferItems:TransferItem[]
   }
+let emptyInterAppDataTransfer = 
+  {
+    CreationAppName=""
+    Version=""
+    StreamName=""
+    TransferItems=[|{ItemName="";ItemLines=[||]}|]
+  }
 
-  // DATA types
 type RRRConfigType =
     {
     ConfigBase:ConfigBase
@@ -24,7 +30,6 @@ type RRRConfigType =
         //testingLogger.info(
         //    eventX "EasyAMConfig Parameters Provided"
         //)
-
 let defaultVerbosity  =
     {
         commandLineParameterSymbol="V"
@@ -38,17 +43,23 @@ let defaultRRRBaseOptions = createNewBaseOptions "rrr" "RSS Ripper" RRRProgramHe
 let defaultRRRConfig:RRRConfigType ={ConfigBase = {defaultRRRBaseOptions with Verbosity=defaultVerbosity}}
 
 
-// GetAppConfigurationFunction
-// GetIncomingStreamFunction
-// TransformIncomingStreamToIncomingDataFunction
-// ProcessIncomingDataFunction
-// PerformIncomingDataTransforms
-// GenerateOutgoingDataFunction
-// OutputDataFunction
+type AppConfig=RRRConfigType
+type IncomingData=unit
+type ProcessedData=unit
+type TransformedData=unit
+type OutgoingData=unit
 
 
+type GetAppConfigurationFunction=string []*seq<string>->AppConfig
+type GetIncomingStreamFunction=AppConfig->AppConfig*InterAppDataTransfer
+type TransformIncomingStreamToIncomingDataFunction=AppConfig*InterAppDataTransfer->AppConfig*IncomingData
+type ProcessIncomingDataFunction=AppConfig*IncomingData->AppConfig*ProcessedData
+type PerformIncomingDataTransformsFunction=AppConfig*ProcessedData->AppConfig*TransformedData
+type GenerateOutgoingDataFunction=AppConfig*TransformedData->AppConfig*OutgoingData
+type OutputDataFunction=AppConfig*OutgoingData->int
+// Allows apps to be joined and tested by the supercompiler without any IO
+type OutpuDataToStreamsFunction=AppConfig*OutgoingData->InterAppDataTransfer
 
-// FUNCTION TYPES
 /// Process any args you can from the command line
 /// Get rid of any junk
 type GetRRRProgramConfigType=string [] ->RRRConfigType
