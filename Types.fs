@@ -265,6 +265,8 @@ type ConfigBase =
         ProgramHelpText:string[]
         Verbosity:ConfigEntryType<Verbosity>
         InterimProgress:InterimProgressType
+        FileListFromCommandLine:(string*System.IO.FileInfo)[]
+        IncomingStream:seq<string>
     }
     member this.PrintProgramDescription =
         this.ProgramHelpText |> Seq.iter(System.Console.WriteLine)
@@ -319,6 +321,8 @@ let createNewBaseOptions programName programTagLine programHelpText verbose =
         ProgramHelpText=programHelpText
         Verbosity = verbose
         InterimProgress = {Items=new System.Collections.Generic.Dictionary<string, System.Text.StringBuilder>()}
+        IncomingStream=[||]
+        FileListFromCommandLine=[||]
     }
 
 let createNewConfigEntry commandlineSymbol commandlineParameterName parameterHelpText initialValue =

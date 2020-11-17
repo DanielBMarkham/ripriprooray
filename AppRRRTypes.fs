@@ -1,4 +1,4 @@
-﻿module AppTypes
+﻿module AppRRRTypes
 open Types
 
 
@@ -19,8 +19,6 @@ type InterAppDataTransfer =
 type RRRConfigType =
     {
     ConfigBase:ConfigBase
-    FileListFromCommandLine:(string*System.IO.FileInfo)[]
-    IncomingStream:seq<string>
     }
     with member this.PrintThis() =()
         //testingLogger.info(
@@ -37,7 +35,17 @@ let defaultVerbosity  =
 let RRRProgramHelp = [|"RipRipRooray. Translate RSS feeds into TSV files."|]
 //createNewBaseOptions programName programTagLine programHelpText verbose
 let defaultRRRBaseOptions = createNewBaseOptions "rrr" "RSS Ripper" RRRProgramHelp defaultVerbosity
-let defaultRRRConfig:RRRConfigType ={ConfigBase = {defaultRRRBaseOptions with Verbosity=defaultVerbosity}; IncomingStream=[||]; FileListFromCommandLine=[||]}
+let defaultRRRConfig:RRRConfigType ={ConfigBase = {defaultRRRBaseOptions with Verbosity=defaultVerbosity}}
+
+
+// GetAppConfigurationFunction
+// GetIncomingStreamFunction
+// TransformIncomingStreamToIncomingDataFunction
+// ProcessIncomingDataFunction
+// PerformIncomingDataTransforms
+// GenerateOutgoingDataFunction
+// OutputDataFunction
+
 
 
 // FUNCTION TYPES
