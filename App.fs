@@ -36,16 +36,6 @@ let outputData:OutputDataFunction=
 let outpuDataToStreams:OutpuDataToStreamsFunction=
   (fun (appConfig,outgoingData)->emptyInterAppDataTransfer)
 
-// app Flow -- CURRENTLY NOT WIRED UP
-let ret =
-  getAppConfiguration(argv,incomingStream)
-  |> getIncomingStream
-  |> transformIncomingStreamToIncomingData
-  |> processIncomingData
-  |> performIncomingDataTransforms
-  |> generateOutgoingData
-  |> outputData
-
 let getRRRConfigFromCommandLine:GetRRRProgramConfigType =
   (
     fun (args)->defaultRRRConfig
@@ -60,7 +50,19 @@ let newMain (argv:string[]) (compilerCancelationToken:System.Threading.Cancellat
       // Error is the new Out. Write here so user can pipe places
       //Console.Error.WriteLine "I am here. yes."
      // incomingStream |> Seq.iter(fun x->Console.Error.Write(x))
-      let mutable ret=0//loadEAConfigFromCommandLine argv incomingStream |> inputStuff |> doStuff |> outputStuff
+      //let mutable ret=0 //loadEAConfigFromCommandLine argv incomingStream |> inputStuff |> doStuff |> outputStuff
+
+      // app Flow
+      let mutable ret =
+        getAppConfiguration(argv,incomingStream)
+        |> getIncomingStream
+        |> transformIncomingStreamToIncomingData
+        |> processIncomingData
+        |> performIncomingDataTransforms
+        |> generateOutgoingData
+        |> outputData
+
+
       // I'm done (since I'm a single-threaded function, I know this)
       // take a few seconds to catch up, then you may run until you quit
       logEvent LogLevel.Verbose "..... Method newMain ending. Normal Path." moduleLogger
